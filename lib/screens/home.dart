@@ -1,6 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:phone_shop_online/models/categories.dart';
+import 'package:phone_shop_online/models/models.dart';
 import 'package:phone_shop_online/shareds/constantes.dart';
 
 class Home extends StatefulWidget {
@@ -10,6 +10,8 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   Categories _categories = Categories();
+  Add adds = Add();
+  BrandsList phoneBrands = BrandsList();
   int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
@@ -35,7 +37,7 @@ class _HomeState extends State<Home> {
                         // Market name
                         Row(
                           children: <Widget>[
-                            Text('Nassim',
+                            Text('Nas',
                                 style: TextStyle(
                                     color: darkBlue,
                                     fontSize: 30.0,
@@ -50,9 +52,10 @@ class _HomeState extends State<Home> {
                                     letterSpacing: -1)),
                           ],
                         ),
+                        SizedBox(height: 5.0),
                         Text('Online Shopping Mart',
                             style: TextStyle(color: darkGrey)),
-                        SizedBox(height: 30.0),
+                        SizedBox(height: 40.0),
                         //Categories Row
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
@@ -78,7 +81,10 @@ class _HomeState extends State<Home> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 30.0),
+                        SizedBox(height: 40.0),
+
+                        // Categories slider
+
                         Container(
                           height: size.height * 0.05,
                           width: size.width,
@@ -122,32 +128,9 @@ class _HomeState extends State<Home> {
                           child: Container(
                             child: ListView(
                               children: <Widget>[
-                                CarouselSlider(
-                                    options: CarouselOptions(
-                                        height: size.height * 0.3,
-                                        autoPlay: true,
-                                        autoPlayAnimationDuration:
-                                            Duration(seconds: 2),
-                                        aspectRatio: 16 / 9,
-                                        viewportFraction: 0.8,
-                                        autoPlayInterval: Duration(seconds: 5),
-                                        autoPlayCurve: Curves.fastOutSlowIn,
-                                        enlargeCenterPage: true),
-                                    items: [
-                                      Container(
-                                        width: size.width,
-                                        child: Image(
-                                            fit: BoxFit.cover,
-                                            image: NetworkImage(
-                                                'https://i0.wp.com/9to5google.com/wp-content/uploads/sites/4/2020/08/samsung_galaxy_note_20_ultra_5.jpg?w=2000&quality=82&strip=all&ssl=1')),
-                                      ),
-                                      Container(
-                                        child: Image(
-                                            fit: BoxFit.cover,
-                                            image: NetworkImage(
-                                                'https://i0.wp.com/9to5google.com/wp-content/uploads/sites/4/2020/08/samsung_galaxy_note_20_ultra_5.jpg?w=2000&quality=82&strip=all&ssl=1')),
-                                      ),
-                                    ]),
+                                _Swiper(adverts: adds),
+                                SizedBox(height: 30.0),
+                                _MarksListView(marks: phoneBrands),
                               ],
                             ),
                           ),
@@ -160,6 +143,131 @@ class _HomeState extends State<Home> {
             ],
           ),
         ));
+  }
+}
+
+// brands List view maker
+
+class _MarksListView extends StatelessWidget {
+  final BrandsList marks;
+  const _MarksListView({
+    Key key,
+    this.marks,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        width: MediaQuery.of(context).size.width,
+        height: 150,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: marks.brands.length,
+          itemBuilder: (context, index) {
+            return _MarkItem(brand: marks.brands[index]);
+          },
+        ));
+  }
+}
+
+// brand items
+
+class _MarkItem extends StatelessWidget {
+  final Mark brand;
+  const _MarkItem({
+    Key key,
+    this.brand,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(right: 15.0),
+      height: 150,
+      width: 160,
+      child: Stack(
+        alignment: Alignment.center,
+        children: <Widget>[
+          Positioned(
+            top: 0,
+            child: Container(
+              alignment: Alignment.center,
+              height: 110,
+              width: 160,
+              decoration: BoxDecoration(
+                  color: lightGrey,
+                  borderRadius: BorderRadius.circular(15.0),
+                  image: DecorationImage(
+                      image: NetworkImage(brand.markLogo), fit: BoxFit.cover)),
+            ),
+          ),
+          Positioned(
+            bottom: 10.0,
+            child: Container(
+              child: Text(
+                brand.markName,
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: darkBlue,
+                    fontSize: 16.0),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Home screen swiper widget
+
+class _Swiper extends StatelessWidget {
+  final Add adverts;
+  const _Swiper({Key key, this.adverts}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return CarouselSlider.builder(
+        options: CarouselOptions(
+            height: MediaQuery.of(context).size.height * 0.3,
+            autoPlay: true,
+            autoPlayAnimationDuration: Duration(seconds: 2),
+            viewportFraction: 1,
+            autoPlayInterval: Duration(seconds: 5),
+            autoPlayCurve: Curves.fastOutSlowIn,
+            enlargeCenterPage: true),
+        itemCount: adverts.url.length,
+        itemBuilder: (context, index) {
+          return _AddPost(imageUrl: adverts.url[index]);
+        });
+  }
+}
+
+// Item for the home screen add Swiper
+
+class _AddPost extends StatelessWidget {
+  final String imageUrl;
+  const _AddPost({
+    Key key,
+    this.imageUrl,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        print('Open add tab');
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          color: darkBlue,
+          borderRadius: BorderRadius.circular(20),
+          image:
+              DecorationImage(image: NetworkImage(imageUrl), fit: BoxFit.cover),
+        ),
+      ),
+    );
   }
 }
 
@@ -184,7 +292,7 @@ class _CustomAppBar extends StatelessWidget {
           children: <Widget>[
             IconButton(
               icon: Icon(
-                Icons.panorama_wide_angle,
+                Icons.menu,
                 color: darkGrey,
                 size: 30.0,
               ),
